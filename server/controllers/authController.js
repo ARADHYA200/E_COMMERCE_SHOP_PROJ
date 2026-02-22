@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sendEmail from "../utils/sendEmail.js";
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -31,15 +32,24 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
-      });
-    }
+    const verifyToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
+
+    await sendEmail(
+      user.email,
+      "Email Verification",
+      `<h2>Verify your email</h2>
+      <a href="${verifyUrl}">Click to Verify</a>`
+    );
+
+    res.status(201).json({
+      message: "Registration successful. Please verify your email."
+    });
   } catch (error) {
     console.error("Register error:", error);
     res.status(500).json({ message: "Registration failed" });
@@ -57,6 +67,10 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      if (!user.isVerified) {
+        return res.status(401).json({ message: "Please verify your email before logging in" });
+      }
+
       res.json({
         _id: user._id,
         name: user.name,
@@ -70,5 +84,26 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Login failed" });
+  }
+};
+export const verifyEmail = async (req, res) => {
+  try {
+    const decoded = jwt.verify(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid link" });
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    res.json({ message: "Email verified successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Invalid or expired token" });
   }
 };

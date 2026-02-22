@@ -30,6 +30,16 @@ const AdminOrders = () => {
     }
   }, []);
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      await API.put(`/orders/${orderId}/status`, { status: newStatus });
+      toast.success("Order status updated");
+      setOrders(orders.map(o => o._id === orderId ? { ...o, orderStatus: newStatus } : o));
+    } catch (error) {
+      toast.error("Failed to update status");
+    }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12 sm:py-20 px-4">
@@ -91,17 +101,30 @@ const AdminOrders = () => {
                   ₹{order.totalAmount}
                 </td>
                 <td className="p-2 sm:p-4">
-                  <span
-                    className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${
-                      order.orderStatus === "Placed"
+                  <select
+                    value={order.orderStatus}
+                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                    className={`px-2 sm:px-3 py-1 rounded-md text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-primary ${
+                      order.orderStatus === "Pending"
                         ? "bg-yellow-100 text-yellow-800"
-                        : order.orderStatus === "Completed"
+                        : order.orderStatus === "Processing"
+                        ? "bg-blue-100 text-blue-800"
+                        : order.orderStatus === "Shipped"
+                        ? "bg-indigo-100 text-indigo-800"
+                        : order.orderStatus === "Out for Delivery"
+                        ? "bg-purple-100 text-purple-800"
+                        : order.orderStatus === "Delivered"
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {order.orderStatus}
-                  </span>
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
                 </td>
                 <td className="p-2 sm:p-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   {new Date(order.createdAt).toLocaleDateString()}

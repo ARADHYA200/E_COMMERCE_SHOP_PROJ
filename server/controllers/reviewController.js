@@ -1,5 +1,6 @@
 import Review from "../models/Review.js";
 import Product from "../models/Product.js";
+import Order from "../models/Order.js";
 
 // Get all reviews for a product
 export const getProductReviews = async (req, res) => {
@@ -50,6 +51,17 @@ export const createReview = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Ensure the user actually purchased the product
+    const hasBought = await Order.findOne({
+      user: userId,
+      orderStatus: "Delivered",
+      "orderItems.product": productId,
+    });
+
+    if (!hasBought) {
+      return res.status(400).json({ message: "You can only review products you have purchased and received" });
     }
 
     // Check if user already reviewed this product

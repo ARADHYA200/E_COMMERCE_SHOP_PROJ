@@ -16,7 +16,20 @@ const productSchema = mongoose.Schema(
     image: {
       type: String,
     },
+    category: {
+      type: String,
+      enum: ["Electronics", "Clothing", "Books", "Accessories"],
+      default: "Electronics",
+    },
     stock: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviews: {
       type: Number,
       default: 0,
     },

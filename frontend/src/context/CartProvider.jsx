@@ -20,6 +20,10 @@ const CartProvider = ({ children }) => {
     );
 
     if (existing) {
+      if (existing.quantity + 1 > product.stock) {
+        toast.error(`Cannot add more than available stock (${product.stock})`);
+        return;
+      }
       setCartItems(
         cartItems.map((item) =>
           item._id === product._id
@@ -29,6 +33,10 @@ const CartProvider = ({ children }) => {
       );
       toast.info("Product quantity updated");
     } else {
+      if (product.stock < 1) {
+        toast.error("This product is out of stock");
+        return;
+      }
       setCartItems([
         ...cartItems,
         { ...product, quantity: 1 },
@@ -48,6 +56,14 @@ const CartProvider = ({ children }) => {
   // ✅ UPDATE QUANTITY
   const updateQuantity = (id, qty) => {
     if (qty < 1) return;
+
+    const existing = cartItems.find((item) => item._id === id);
+    if (!existing) return;
+
+    if (qty > existing.stock) {
+      toast.error(`Only ${existing.stock} units available in stock`);
+      qty = existing.stock;
+    }
 
     setCartItems(
       cartItems.map((item) =>

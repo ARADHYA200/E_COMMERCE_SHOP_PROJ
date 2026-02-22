@@ -88,3 +88,127 @@ export const getMyOrders = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
+
+// Edit pending order
+export const updateOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Only allow editing if status is Pending
+    if (order.orderStatus !== "Pending") {
+      return res.status(400).json({ message: "Only pending orders can be edited" });
+    }
+
+    // Ensure only the owner can edit
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to edit this order" });
+    }
+
+    const { shippingAddress, orderItems } = req.body;
+
+    if (shippingAddress) {
+      order.shippingAddress = shippingAddress;
+    }
+
+    if (orderItems && orderItems.length > 0) {
+      // Re-calculate the total amount based on the new items
+      // (Assuming items contain price logic or we fetch from DB, but user sends {product, name, quantity, price})
+      let newTotal = 0;
+      for (const item of orderItems) {
+        newTotal += item.price * item.quantity;
+      }
+      order.orderItems = orderItems;
+      order.totalAmount = newTotal;
+    }
+
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Update order error:", error);
+    res.status(500).json({ message: "Failed to update order" });
+  }
+};
+
+// Cancel pending order
+export const cancelOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Only allow canceling if status is Pending
+    if (order.orderStatus !== "Pending") {
+      return res.status(400).json({ message: "Only pending orders can be cancelled" });
+    }
+
+    // Ensure only the owner can cancel
+    if (order.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to cancel this order" });
+    }
+
+    order.orderStatus = "Cancelled";
+    const updatedOrder = await order.save();
+    
+    // Optional: Restore product stock if logic requires it
+    for (let item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.stock += item.quantity;
+        await product.save();
+      }
+    }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Cancel order error:", error);
+    res.status(500).json({ message: "Failed to cancel order" });
+  }
+};
+
+// Delete order
+export const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Ensure only the owner can delete
+    if (order.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not authorized to delete this order" });
+    }
+
+    await Order.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Delete order error:", error);
+    res.status(500).json({ message: "Failed to delete order" });
+  }
+};
+
+// Admin manually updates order status
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.orderStatus = req.body.status;
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } catch (error) {
+    console.error("Update order status error:", error);
+    res.status(500).json({ message: "Failed to update order status" });
+  }
+};

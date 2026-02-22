@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,10 +17,12 @@ import UserProfile from "./pages/UserProfile";
 import Wishlist from "./pages/Wishlist";
 import PasswordReset from "./pages/PasswordReset";
 import NotFound from "./pages/NotFound";
+import VerifyEmail from "./pages/VerifyEmail";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
+import AdminCoupons from "./pages/AdminCoupons";
 
 function App() {
   return (
@@ -33,6 +36,7 @@ function App() {
 
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
 
               <Route
                 path="/cart"
@@ -64,6 +68,7 @@ function App() {
               <Route path="/login" element={<LoginCustomer />} />
               <Route path="/register" element={<RegisterCustomer />} />
               <Route path="/forgot-password" element={<PasswordReset />} />
+              <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
               <Route
                 path="/profile"
@@ -108,6 +113,15 @@ function App() {
                 element={
                   <ProtectedRoute adminOnly={true}>
                     <AdminOrders />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin/coupons"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminCoupons />
                   </ProtectedRoute>
                 }
               />

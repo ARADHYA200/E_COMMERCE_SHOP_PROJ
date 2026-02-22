@@ -17,11 +17,32 @@ const Checkout = () => {
     phone: "",
   });
 
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return toast.error("Enter a coupon code");
+    try {
+      const { data } = await API.post("/coupons/apply", {
+        code: couponCode,
+        orderAmount: totalPrice,
+      });
+      setDiscount(data.coupon.discount);
+      setAppliedCoupon(data.coupon);
+      toast.success("Coupon applied successfully!");
+    } catch (error) {
+      setDiscount(0);
+      setAppliedCoupon(null);
+      toast.error(error.response?.data?.message || "Invalid coupon");
+    }
   };
 
   const handleOrder = async () => {
@@ -44,7 +65,7 @@ const Checkout = () => {
           price: item.price,
         })),
         shippingAddress: formData,
-        totalAmount: totalPrice,
+        totalAmount: totalPrice - discount,
       };
 
       await API.post("/orders", orderData);
@@ -110,10 +131,37 @@ const Checkout = () => {
         ))}
 
         <hr className="border-gray-300 dark:border-gray-700" />
+        
+        {/* Coupon Section */}
+        <div className="flex gap-2">
+          <Input 
+            label=""
+            name="couponCode"
+            value={couponCode}
+            onChange={(e) => {
+              setCouponCode(e.target.value);
+              setDiscount(0);
+              setAppliedCoupon(null);
+            }}
+            placeholder="Enter coupon code"
+          />
+          <Button variant="secondary" onClick={handleApplyCoupon} className="whitespace-nowrap h-[42px] mt-[2px]">
+            Apply
+          </Button>
+        </div>
+
+        {discount > 0 && (
+          <div className="flex justify-between text-green-600 font-semibold text-sm sm:text-base">
+            <span>Discount ({appliedCoupon?.code})</span>
+            <span>- ₹{discount}</span>
+          </div>
+        )}
+
+        <hr className="border-gray-300 dark:border-gray-700" />
 
         <div className="flex justify-between font-bold text-base sm:text-lg">
           <span>Total</span>
-          <span>₹{totalPrice}</span>
+          <span>₹{totalPrice - discount}</span>
         </div>
       </div>
 

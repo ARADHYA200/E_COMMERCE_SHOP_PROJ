@@ -1,6 +1,14 @@
 import express from "express";
-import { createOrder, getOrders, getMyOrders } from "../controllers/orderController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { 
+  createOrder, 
+  getOrders, 
+  getMyOrders,
+  updateOrder,
+  cancelOrder,
+  deleteOrder,
+  updateOrderStatus
+} from "../controllers/orderController.js";
+import { protect, admin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -12,5 +20,13 @@ router.get("/", protect, getOrders);
 
 // Get My Orders specifically (protected) - for backward compatibility
 router.get("/my", protect, getMyOrders);
+
+// User actions on their orders
+router.put("/:id", protect, updateOrder);
+router.put("/:id/cancel", protect, cancelOrder);
+router.delete("/:id", protect, deleteOrder);
+
+// Admin actions
+router.put("/:id/status", protect, admin, updateOrderStatus);
 
 export default router;

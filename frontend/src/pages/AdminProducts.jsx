@@ -15,6 +15,7 @@ const AdminProducts = () => {
     description: "",
     image: "",
     stock: "",
+    category: "Electronics",
   });
 
   const fetchProducts = async () => {
@@ -53,6 +54,7 @@ const AdminProducts = () => {
       description: "",
       image: "",
       stock: "",
+      category: "Electronics",
     });
     setEditingId(null);
   };
@@ -100,6 +102,7 @@ const AdminProducts = () => {
       description: product.description || "",
       image: product.image || "",
       stock: product.stock,
+      category: product.category || "Electronics",
     });
     setEditingId(product._id);
   };
@@ -173,6 +176,18 @@ const AdminProducts = () => {
           className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-lg dark:bg-gray-800"
         />
 
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-lg dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          <option value="Electronics">Electronics</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Books">Books</option>
+          <option value="Accessories">Accessories</option>
+        </select>
+
         <input
           name="image"
           placeholder="Image URL"
@@ -218,8 +233,13 @@ const AdminProducts = () => {
               className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 sm:items-center bg-white dark:bg-gray-900 p-3 sm:p-4 rounded-xl shadow-md border border-gray-200 dark:border-gray-700"
             >
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm sm:text-lg truncate">{product.name}</p>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-sm sm:text-lg truncate">{product.name}</p>
+                  <span className="bg-gray-100 dark:bg-gray-800 text-xs px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">
+                    {product.category || "Electronics"}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
                   {product.description}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2 text-xs sm:text-sm">

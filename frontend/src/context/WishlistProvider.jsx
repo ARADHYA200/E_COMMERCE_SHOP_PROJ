@@ -1,36 +1,60 @@
 import { useState, useEffect } from "react";
 import { WishlistContext } from "./WishlistContext";
+import API from "../services/api";
 
 const WishlistProvider = ({ children }) => {
-  // Initialize state directly from localStorage to avoid cascading renders
-  const [wishlistItems, setWishlistItems] = useState(() => {
-    const storedWishlist = localStorage.getItem("wishlist");
-    return storedWishlist ? JSON.parse(storedWishlist) : [];
-  });
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // Sync to localStorage whenever wishlistItems changes
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
-  }, [wishlistItems]);
+    const fetchWishlist = async () => {
+      try {
+        const { data } = await API.get("/wishlist");
+        setWishlistItems(data);
+      } catch (error) {
+        console.error("Failed to fetch wishlist");
+      }
+    };
+    if (user?.token && user?.role !== "admin") {
+      fetchWishlist();
+    }
+  }, [user?.token]);
 
-  const addToWishlist = (product) => {
-    setWishlistItems((prev) => {
-      const exists = prev.find((item) => item._id === product._id);
-      if (exists) return prev;
-      return [...prev, product];
-    });
+  const addToWishlist = async (product) => {
+    // Optimistic UI updates could go here, or just fetch
+    const previous = [...wishlistItems];
+    setWishlistItems((prev) => [...prev, product]);
+    try {
+      const { data } = await API.post("/wishlist", { productId: product._id });
+      setWishlistItems(data);
+    } catch (error) {
+      setWishlistItems(previous);
+    }
   };
 
-  const removeFromWishlist = (productId) => {
+  const removeFromWishlist = async (productId) => {
+    const previous = [...wishlistItems];
     setWishlistItems((prev) => prev.filter((item) => item._id !== productId));
+    try {
+      const { data } = await API.delete(`/wishlist/${productId}`);
+      setWishlistItems(data);
+    } catch (error) {
+      setWishlistItems(previous);
+    }
   };
 
   const isInWishlist = (productId) => {
     return wishlistItems.some((item) => item._id === productId);
   };
 
-  const clearWishlist = () => {
+  const clearWishlist = async () => {
+    const previous = [...wishlistItems];
     setWishlistItems([]);
+    try {
+      await API.delete("/wishlist");
+    } catch (error) {
+      setWishlistItems(previous);
+    }
   };
 
   return (

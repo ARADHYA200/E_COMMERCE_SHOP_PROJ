@@ -32,9 +32,17 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6 sm:space-y-10 px-4 sm:px-6">
       <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
-      <Link to="/admin/products" className="text-primary underline hover:no-underline text-sm sm:text-base">
-        Manage Products →
-      </Link>
+      <div className="flex flex-wrap gap-4 mb-6">
+        <Link to="/admin/products" className="text-primary underline hover:no-underline text-sm sm:text-base">
+          Manage Products →
+        </Link>
+        <Link to="/admin/orders" className="text-primary underline hover:no-underline text-sm sm:text-base">
+          Manage Orders →
+        </Link>
+        <Link to="/admin/coupons" className="text-primary underline hover:no-underline text-sm sm:text-base">
+          Manage Coupons →
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
 
