@@ -9,11 +9,11 @@ const ProductCard = ({ product }) => {
   return (
       <Card className="group bg-white dark:bg-gray-900 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col p-4">
 
-    <div className="relative w-full h-56 overflow-hidden rounded-xl mb-4">
+    <div className="w-full h-56 bg-gray-100 dark:bg-gray-800 rounded-xl flex items-center justify-center mb-4 overflow-hidden">
       <img
         src={product.image}
         alt={product.name}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
       />
     </div>
 
