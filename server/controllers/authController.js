@@ -40,12 +40,13 @@ export const registerUser = async (req, res) => {
 
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
 
-    await sendEmail(
-      user.email,
-      "Email Verification",
-      `<h2>Verify your email</h2>
-      <a href="${verifyUrl}">Click to Verify</a>`
-    );
+    // await sendEmail(
+    //   user.email,
+    //   "Email Verification",
+    //   `<h2>Verify your email</h2>
+    //   <a href="${verifyUrl}">Click to Verify</a>`
+    // );
+console.log("Verification URL:", verifyUrl);
 
     res.status(201).json({
       message: "Registration successful. Please verify your email."
