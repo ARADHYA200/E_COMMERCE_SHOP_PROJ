@@ -7,31 +7,33 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+      <Card className="group bg-white dark:bg-gray-900 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col p-4">
 
+    <div className="relative w-full h-56 overflow-hidden rounded-xl mb-4">
       <img
         src={product.image}
         alt={product.name}
-        className="h-40 sm:h-48 w-full object-cover rounded-lg mb-3 sm:mb-4"
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
+    </div>
 
-      <h3 className="text-base sm:text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100 line-clamp-2">
-        {product.name}
-      </h3>
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2 mb-2">
+      {product.name}
+    </h3>
 
-      <p className="text-primary text-lg sm:text-xl font-bold mb-4">
-        ₹{product.price}
-      </p>
+    <p className="text-indigo-600 text-xl font-bold mb-4">
+      ₹{product.price}
+    </p>
 
-      <Button
-        variant="primary"
-        className="w-full mt-auto text-sm sm:text-base"
-        onClick={() => addToCart(product)}
-      >
-        Add to Cart
-      </Button>
+    <Button
+      variant="primary"
+      className="w-full mt-auto"
+      onClick={() => addToCart(product)}
+    >
+      Add to Cart
+    </Button>
 
-    </Card>
+  </Card>
   );
 };
 
