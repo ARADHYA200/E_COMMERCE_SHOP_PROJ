@@ -2,6 +2,7 @@ import express from "express";
 import {
   getProducts,
   createProduct,
+  updateProduct,
   deleteProduct,
 } from "../controllers/productController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
@@ -13,5 +14,7 @@ router.get("/", getProducts);
 // ✅ Admin only routes
 router.post("/", protect, admin, createProduct);
 router.delete("/:id", protect, admin, deleteProduct);
+router.put("/:id", protect, admin, updateProduct);
+
 
 export default router;
