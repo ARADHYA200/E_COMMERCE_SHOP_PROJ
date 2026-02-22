@@ -40,20 +40,26 @@ export const registerUser = async (req, res) => {
 
     const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
 
-    // await sendEmail(
-    //   user.email,
-    //   "Email Verification",
-    //   `<h2>Verify your email</h2>
-    //   <a href="${verifyUrl}">Click to Verify</a>`
-    // );
-console.log("Verification URL:", verifyUrl);
+    try {
+      await sendEmail(
+        user.email,
+        "Email Verification",
+        `<h2>Verify your email</h2>
+        <a href="${verifyUrl}">Click to Verify</a>`
+      );
+      console.log("Verification email sent to:", user.email);
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError);
+      await User.findByIdAndDelete(user._id);
+      return res.status(500).json({ message: "Could not send verification email. Please try registering again." });
+    }
 
     res.status(201).json({
-      message: "Registration successful. Please verify your email."
+      message: "Registration successful. Please check your email to verify your account."
     });
   } catch (error) {
-    console.error("Register error:", error);
-    res.status(500).json({ message: "Registration failed" });
+    console.error("FULL REGISTER ERROR:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
