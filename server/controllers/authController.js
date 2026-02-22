@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import sendEmail from "../utils/sendEmail.js";
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,6 +14,12 @@ export const registerUser = async (req, res) => {
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Please enter a valid email address" });
     }
 
     const userExists = await User.findOne({ email });
@@ -32,30 +37,13 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const verifyToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    const verifyUrl = `${process.env.CLIENT_URL}/verify-email/${verifyToken}`;
-
-    try {
-      await sendEmail(
-        user.email,
-        "Email Verification",
-        `<h2>Verify your email</h2>
-        <a href="${verifyUrl}">Click to Verify</a>`
-      );
-      console.log("Verification email sent to:", user.email);
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-      await User.findByIdAndDelete(user._id);
-      return res.status(500).json({ message: "Could not send verification email. Please try registering again." });
-    }
-
     res.status(201).json({
-      message: "Registration successful. Please check your email to verify your account."
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+      message: "Registration successful."
     });
   } catch (error) {
     console.error("FULL REGISTER ERROR:", error);
@@ -74,10 +62,6 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      if (!user.isVerified) {
-        return res.status(401).json({ message: "Please verify your email before logging in" });
-      }
-
       res.json({
         _id: user._id,
         name: user.name,
@@ -91,26 +75,5 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Login failed" });
-  }
-};
-export const verifyEmail = async (req, res) => {
-  try {
-    const decoded = jwt.verify(
-      req.params.token,
-      process.env.JWT_SECRET
-    );
-
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res.status(400).json({ message: "Invalid link" });
-    }
-
-    user.isVerified = true;
-    await user.save();
-
-    res.json({ message: "Email verified successfully" });
-  } catch (error) {
-    res.status(400).json({ message: "Invalid or expired token" });
   }
 };

@@ -49,6 +49,7 @@ const RegisterCustomer = () => {
 
         <Input
           label="Email"
+          type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}

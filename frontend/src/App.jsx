@@ -17,7 +17,6 @@ import UserProfile from "./pages/UserProfile";
 import Wishlist from "./pages/Wishlist";
 import PasswordReset from "./pages/PasswordReset";
 import NotFound from "./pages/NotFound";
-import VerifyEmail from "./pages/VerifyEmail";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
@@ -68,7 +67,6 @@ function App() {
               <Route path="/login" element={<LoginCustomer />} />
               <Route path="/register" element={<RegisterCustomer />} />
               <Route path="/forgot-password" element={<PasswordReset />} />
-              <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
               <Route
                 path="/profile"
