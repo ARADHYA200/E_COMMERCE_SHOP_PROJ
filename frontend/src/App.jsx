@@ -22,6 +22,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCoupons from "./pages/AdminCoupons";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
               <Route path="/login" element={<LoginCustomer />} />
               <Route path="/register" element={<RegisterCustomer />} />
               <Route path="/forgot-password" element={<PasswordReset />} />
+              <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
               <Route
                 path="/profile"
