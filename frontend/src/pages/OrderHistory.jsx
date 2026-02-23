@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { toast } from "react-toastify";
 import Button from "../components/ui/Button";
+import { useLocation } from "react-router-dom";
 
 const OrderHistory = () => {
+  const location = useLocation(); // ✅ moved inside component
   const user = JSON.parse(localStorage.getItem("user"));
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Edit state
+
   const [editingOrderId, setEditingOrderId] = useState(null);
   const [editFormData, setEditFormData] = useState({
     shippingAddress: { address: "", phone: "", name: "" },
@@ -18,7 +19,10 @@ const OrderHistory = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get("/orders");
+
+      // ✅ fixed endpoint
+      const { data } = await API.get("/orders/my");
+
       setOrders(data);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -37,6 +41,13 @@ const OrderHistory = () => {
       fetchOrders();
     }
   }, []);
+
+  // ✅ success toast after redirect
+  useEffect(() => {
+    if (location.state?.justOrdered) {
+      toast.success("🎉 Order placed successfully!");
+    }
+  }, [location.state]);
 
   const handleCancelOrder = async (orderId) => {
     if (!window.confirm("Are you sure you want to cancel this order?")) return;
@@ -62,7 +73,6 @@ const OrderHistory = () => {
 
   const startEditing = (order) => {
     setEditingOrderId(order._id);
-    // Deep clone the data to avoid direct state mutation issues
     setEditFormData({
       shippingAddress: { ...order.shippingAddress },
       orderItems: order.orderItems.map(item => ({ ...item }))
@@ -93,11 +103,12 @@ const OrderHistory = () => {
         ...item,
         product: item.product?._id || item.product
       }));
-      
+
       await API.put(`/orders/${orderId}`, {
         shippingAddress: editFormData.shippingAddress,
         orderItems: sanitizedItems
       });
+
       toast.success("Order updated successfully");
       setEditingOrderId(null);
       fetchOrders();

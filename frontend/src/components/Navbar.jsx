@@ -80,7 +80,7 @@ const Navbar = () => {
               )}
             </Link>
           )}
-
+          
           {/* Cart - only visible to logged-in customers (non-admins) */}
           {showCart && (
             <Link
@@ -96,6 +96,16 @@ const Navbar = () => {
               )}
             </Link>
           )}
+          {/* My Orders - visible to logged-in customers (non-admins) */}
+            {showCart && (
+              <Link
+                to="/orders"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary transition text-sm lg:text-base"
+              >
+                My Orders
+              </Link>
+            )}
+
 
           {isAdmin && (
             <Link

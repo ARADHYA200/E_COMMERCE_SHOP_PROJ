@@ -1,87 +1,62 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 const Footer = () => {
   const [email, setEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
+  const location = useLocation();
 
-  const handleNewsletterSubscribe = async (e) => {
+  // ✅ AUTO SCROLL TO TOP ON ROUTE CHANGE
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
+  const handleNewsletterSubscribe = (e) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Please enter a valid email");
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setSubscribing(true);
-    try {
-      toast.success("Subscribed to newsletter!");
+    setTimeout(() => {
+      toast.success("🎉 Successfully subscribed!");
       setEmail("");
-    } catch {
-      toast.error("Failed to subscribe. Try again.");
-    } finally {
       setSubscribing(false);
-    }
+    }, 800);
   };
 
-  const handleFooterLinks = (type) => {
-    switch (type) {
-      case "contact":
-        toast.info("📞 Contact: support@ecommerce.com | +1 (555) 123-4567");
-        break;
-      case "faq":
-        toast.info("❓ FAQ: Check back soon for detailed FAQs!");
-        break;
-      case "help":
-        toast.info("💬 Help Center: Email support@ecommerce.com for assistance");
-        break;
-      case "shipping":
-        toast.info("🚚 Shipping: Free shipping on orders over ₹500");
-        break;
-      case "returns":
-        toast.info("↩️ Returns available within 30 days of purchase");
-        break;
-      case "track":
-        toast.info("📍 Track your order using the email confirmation");
-        break;
-      case "privacy":
-        toast.info("🔒 Privacy Policy: Your data is secure with us");
-        break;
-      case "terms":
-        toast.info("📋 Terms of Service: Please review before shopping");
-        break;
-      case "cookies":
-        toast.info("🍪 We use cookies to enhance your experience");
-        break;
-      case "accessibility":
-        toast.info("♿ Accessibility: We strive for inclusive design");
-        break;
-      default:
-        break;
-    }
+  const handleFooterLinks = (msg) => {
+    toast.info(msg);
   };
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-gray-100 mt-16">
-      {/* Newsletter Section */}
-      <div className="bg-primary py-8 sm:py-12">
-        <div className="container mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">Stay Updated</h2>
-          <p className="text-gray-200 mb-6 text-sm sm:text-base">
-            Subscribe to our newsletter for exclusive deals and product updates.
+    <footer className="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 mt-20 transition-colors">
+
+      {/* ================= NEWSLETTER ================= */}
+      <div className="bg-gradient-to-r from-primary to-indigo-600 py-12 text-white">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
+          <p className="mb-6 text-white/90">
+            Subscribe to receive exclusive discounts & new product launches.
           </p>
-          <form onSubmit={handleNewsletterSubscribe} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+
+          <form
+            onSubmit={handleNewsletterSubscribe}
+            className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto"
+          >
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none text-sm"
+              className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none"
             />
             <button
               type="submit"
               disabled={subscribing}
-              className="px-6 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-gray-200 transition disabled:opacity-50 text-sm sm:text-base"
+              className="px-6 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-gray-200 transition disabled:opacity-50"
             >
               {subscribing ? "Subscribing..." : "Subscribe"}
             </button>
@@ -89,219 +64,120 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main Footer */}
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8">
-          {/* Brand */}
-          <div>
-            <h3 className="text-2xl font-bold text-primary mb-4">
-              ECOMMERCE_SHOP
-            </h3>
-            <p className="text-gray-400 mb-4">
-              Your trusted wholesale & retail e-commerce platform.
-            </p>
-            <div className="flex gap-4">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition"
-              >
-                <span className="text-2xl">f</span>
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition"
-              >
-                <span className="text-2xl">𝕏</span>
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition"
-              >
-                <span className="text-2xl">📷</span>
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-primary transition"
-              >
-                <span className="text-2xl">in</span>
-              </a>
-            </div>
-          </div>
+      {/* ================= MAIN GRID ================= */}
+      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/products"
-                  className="text-gray-400 hover:text-primary transition"
-                >
-                  Browse Products
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-gray-400 hover:text-primary transition"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("contact")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Contact Us
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("faq")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  FAQ
-                </button>
-              </li>
-            </ul>
-          </div>
+        {/* Brand */}
+        <div>
+          <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+            ECOMMERCE<span className="text-primary">_SHOP</span>
+          </h3>
 
-          {/* Support */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("help")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Help Center
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("shipping")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Shipping Info
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("returns")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Returns & Refunds
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("track")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Track Order
-                </button>
-              </li>
-            </ul>
-          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+            Your trusted wholesale & retail e-commerce platform delivering
+            premium products with unmatched reliability.
+          </p>
 
-          {/* Legal & Info */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("privacy")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Privacy Policy
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("terms")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Terms of Service
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("cookies")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Cookie Policy
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => handleFooterLinks("accessibility")}
-                  className="text-gray-400 hover:text-primary transition cursor-pointer"
-                >
-                  Accessibility
-                </button>
-              </li>
-            </ul>
+          <div className="flex gap-4 text-xl">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="hover:text-primary transition">🌐</a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-primary transition">𝕏</a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-primary transition">📷</a>
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-primary transition">💼</a>
           </div>
         </div>
 
-        {/* Payment Methods */}
-        <div className="border-t border-gray-700 py-8 mb-8">
-          <h4 className="text-lg font-semibold mb-4 text-center">
-            Secure Payment Methods
-          </h4>
-          <div className="flex justify-center gap-6 flex-wrap">
-            <div className="text-center">
-              <span className="text-3xl">💳</span>
-              <p className="text-sm text-gray-400 mt-1">Credit Card</p>
-            </div>
-            <div className="text-center">
-              <span className="text-3xl">🅿️</span>
-              <p className="text-sm text-gray-400 mt-1">PayPal</p>
-            </div>
-            <div className="text-center">
-              <span className="text-3xl">🏦</span>
-              <p className="text-sm text-gray-400 mt-1">Bank Transfer</p>
-            </div>
-            <div className="text-center">
-              <span className="text-3xl">💰</span>
-              <p className="text-sm text-gray-400 mt-1">Cash on Delivery</p>
-            </div>
-          </div>
+        {/* Quick Links */}
+        <div>
+          <h4 className="font-semibold mb-5 text-gray-900 dark:text-white">Quick Links</h4>
+          <ul className="space-y-3 text-sm">
+            <li>
+              <Link to="/" className="hover:text-primary transition">Home</Link>
+            </li>
+            <li>
+              <Link to="/products" className="hover:text-primary transition">Browse Products</Link>
+            </li>
+            <li>
+              <Link to="/orders" className="hover:text-primary transition">My Orders</Link>
+            </li>
+            <li>
+              <button
+                onClick={() => handleFooterLinks("📞 support@ecommerce.com | +91 9876543210")}
+                className="hover:text-primary transition"
+              >
+                Contact Us
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => handleFooterLinks("❓ FAQ launching soon")}
+                className="hover:text-primary transition"
+              >
+                FAQ
+              </button>
+            </li>
+          </ul>
         </div>
 
-        {/* Contact Info */}
-        <div className="border-t border-gray-700 pt-8 text-center">
-          <div className="grid md:grid-cols-3 gap-4 mb-8">
-            <div>
-              <p className="text-gray-400">📞 Phone</p>
-              <p className="text-primary font-semibold">+1 (555) 123-4567</p>
-            </div>
-            <div>
-              <p className="text-gray-400">📧 Email</p>
-              <p className="text-primary font-semibold">support@ecommerce.com</p>
-            </div>
-            <div>
-              <p className="text-gray-400">📍 Location</p>
-              <p className="text-primary font-semibold">123 Commerce St, City, Country</p>
-            </div>
-          </div>
+        {/* Support */}
+        <div>
+          <h4 className="font-semibold mb-5 text-gray-900 dark:text-white">Support</h4>
+          <ul className="space-y-3 text-sm">
+            <li><button onClick={() => handleFooterLinks("💬 24/7 Help Center")} className="hover:text-primary transition">Help Center</button></li>
+            <li><button onClick={() => handleFooterLinks("🚚 Free shipping above ₹500")} className="hover:text-primary transition">Shipping Info</button></li>
+            <li><button onClick={() => handleFooterLinks("↩️ 30-day easy returns")} className="hover:text-primary transition">Returns & Refunds</button></li>
+            <li><button onClick={() => handleFooterLinks("📍 Track via order confirmation email")} className="hover:text-primary transition">Track Order</button></li>
+          </ul>
         </div>
 
-        {/* Bottom */}
-        <div className="border-t border-gray-700 pt-6 text-center text-gray-400">
-          <p>© 2026 ECOMMERCE_SHOP. All rights reserved. | Built with ❤️</p>
+        {/* Legal */}
+        <div>
+          <h4 className="font-semibold mb-5 text-gray-900 dark:text-white">Legal</h4>
+          <ul className="space-y-3 text-sm">
+            <li><button onClick={() => handleFooterLinks("🔒 Privacy protected")} className="hover:text-primary transition">Privacy Policy</button></li>
+            <li><button onClick={() => handleFooterLinks("📜 Terms apply")} className="hover:text-primary transition">Terms of Service</button></li>
+            <li><button onClick={() => handleFooterLinks("🍪 Cookie usage")} className="hover:text-primary transition">Cookie Policy</button></li>
+            <li><button onClick={() => handleFooterLinks("♿ Accessibility first")} className="hover:text-primary transition">Accessibility</button></li>
+          </ul>
         </div>
       </div>
+
+      {/* ================= PAYMENT ================= */}
+      <div className="border-t border-gray-300 dark:border-gray-800 py-10">
+        <h4 className="text-center font-semibold mb-6 text-gray-900 dark:text-white">
+          Secure Payment Methods
+        </h4>
+
+        <div className="flex justify-center gap-12 text-4xl opacity-80">
+          <span>💳</span>
+          <span>🅿️</span>
+          <span>🏦</span>
+          <span>💰</span>
+        </div>
+      </div>
+
+      {/* ================= CONTACT ================= */}
+      <div className="border-t border-gray-300 dark:border-gray-800 py-10">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8 text-center text-sm">
+          <div>
+            <p className="text-gray-500 dark:text-gray-400">📞 Phone</p>
+            <p className="font-semibold text-gray-900 dark:text-white mt-1">+91 98765 43210</p>
+          </div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400">📧 Email</p>
+            <p className="font-semibold text-gray-900 dark:text-white mt-1">support@ecommerce.com</p>
+          </div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400">📍 Location</p>
+            <p className="font-semibold text-gray-900 dark:text-white mt-1">New Delhi, India</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= COPYRIGHT ================= */}
+      <div className="border-t border-gray-300 dark:border-gray-800 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        © {new Date().getFullYear()} ECOMMERCE_SHOP. All rights reserved.
+      </div>
+
     </footer>
   );
 };

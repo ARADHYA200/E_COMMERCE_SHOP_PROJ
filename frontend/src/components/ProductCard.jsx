@@ -8,12 +8,13 @@ import { WishlistContext } from "../context/WishlistContext";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useContext(WishlistContext);
+  const { addToWishlist, removeFromWishlist, isInWishlist } =
+    useContext(WishlistContext);
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const isLiked = isInWishlist(product._id);
-  // Guest OR Customer should see buttons. Admins should NOT see Add to Cart / Heart
   const showActions = !user || user.role !== "admin";
 
   const handleCartClick = () => {
@@ -31,26 +32,27 @@ const ProductCard = ({ product }) => {
       navigate("/login");
       return;
     }
-    if (isLiked) {
-      removeFromWishlist(product._id);
-    } else {
-      addToWishlist(product);
-    }
+    isLiked
+      ? removeFromWishlist(product._id)
+      : addToWishlist(product);
+  };
+
+  const handleViewDetails = () => {
+    navigate(`/products/${product._id}`);
   };
 
   return (
     <Card className="group bg-white dark:bg-gray-900 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 h-full flex flex-col p-4 relative">
-      
+
       {showActions && (
-        <button 
+        <button
           onClick={handleWishlistClick}
           className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-          title="Wishlist"
         >
           {isLiked ? (
-            <span className="text-red-500 text-xl leading-none block">❤️</span>
+            <span className="text-red-500 text-xl">❤️</span>
           ) : (
-            <span className="text-gray-400 hover:text-red-400 text-xl leading-none block">🤍</span>
+            <span className="text-gray-400 hover:text-red-400 text-xl">🤍</span>
           )}
         </button>
       )}
@@ -73,30 +75,67 @@ const ProductCard = ({ product }) => {
         {product.name}
       </h3>
 
+      {/* Rating */}
+      <div className="flex items-center mb-2">
+        {product.rating && product.rating > 0 ? (
+          <>
+            <div className="flex text-yellow-500 text-lg">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span key={star}>
+                  {star <= Math.round(product.rating) ? "★" : "☆"}
+                </span>
+              ))}
+            </div>
+            <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+              {product.rating.toFixed(1)} ({product.reviews || 0} reviews)
+            </span>
+          </>
+        ) : (
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            No Reviews Yet
+          </span>
+        )}
+      </div>
+
       <p className="text-indigo-600 text-xl font-bold mb-4">
         ₹{product.price}
       </p>
 
-      {showActions ? (
-        product.stock <= 0 ? (
-          <div className="w-full mt-auto bg-gray-100 dark:bg-gray-800 text-gray-500 text-center py-2 rounded-lg font-semibold border border-gray-200 dark:border-gray-700">
-            Out of Stock
-          </div>
-        ) : (
+      <p className="text-sm text-gray-500 mb-4">
+        Stock: {product.stock}
+      </p>
+
+      {showActions && (
+        <div className="flex gap-2 mt-auto">
+          {product.stock <= 0 ? (
+            <div className="w-full bg-gray-100 dark:bg-gray-800 text-gray-500 text-center py-2 rounded-lg font-semibold border border-gray-200 dark:border-gray-700">
+              Out of Stock
+            </div>
+          ) : (
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={handleCartClick}
+            >
+              Add to Cart
+            </Button>
+          )}
+
           <Button
-            variant="primary"
-            className="w-full mt-auto"
-            onClick={handleCartClick}
+            variant="secondary"
+            className="flex-1"
+            onClick={handleViewDetails}
           >
-            Add to Cart
+            View Details
           </Button>
-        )
-      ) : (
+        </div>
+      )}
+
+      {!showActions && (
         <div className="mt-auto pt-4 text-center text-sm text-gray-500">
           Admin Preview
         </div>
       )}
-
     </Card>
   );
 };

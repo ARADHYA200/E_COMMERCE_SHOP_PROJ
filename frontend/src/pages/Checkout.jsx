@@ -45,7 +45,7 @@ const Checkout = () => {
     }
   };
 
-  const handleOrder = async () => {
+const handleOrder = async () => {
     if (!formData.name || !formData.address || !formData.phone) {
       toast.error("Please fill all details");
       return;
@@ -70,11 +70,13 @@ const Checkout = () => {
 
       await API.post("/orders", orderData);
 
-      toast.success("Order placed successfully!");
+      toast.success("Order placed successfully 🎉");
 
+      // Clear cart
       localStorage.removeItem("cart");
-      navigate("/");
-      window.location.reload();
+
+      // ✅ Redirect to Order History instead of Home
+      navigate("/orders", { state: { justOrdered: true } });
 
     } catch (error) {
       console.error(error);

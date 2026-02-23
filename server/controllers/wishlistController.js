@@ -3,22 +3,37 @@ import Wishlist from "../models/Wishlist.js";
 // @desc    Get user wishlist
 // @route   GET /api/wishlist
 // @access  Private
+import Review from "../models/Review.js";
+
 export const getWishlist = async (req, res) => {
   try {
-    let wishlist = await Wishlist.findOne({ user: req.user._id }).populate(
-      "products"
-    );
+    let wishlist = await Wishlist.findOne({ user: req.user._id }).populate("products");
 
     if (!wishlist) {
       wishlist = await Wishlist.create({ user: req.user._id, products: [] });
     }
 
-    res.json(wishlist.products);
+    const updatedProducts = await Promise.all(
+      wishlist.products.map(async (product) => {
+        const reviews = await Review.find({ product: product._id });
+
+        const averageRating =
+          reviews.length > 0
+            ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
+            : 0;
+
+        return {
+          ...product._doc,
+          averageRating,
+        };
+      })
+    );
+
+    res.json(updatedProducts);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch wishlist" });
   }
 };
-
 // @desc    Add product to wishlist
 // @route   POST /api/wishlist
 // @access  Private
