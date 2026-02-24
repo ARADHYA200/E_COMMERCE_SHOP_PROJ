@@ -114,6 +114,15 @@ const Navbar = () => {
             >
               Admin
             </Link>
+            
+          )}
+          {isAdmin && (
+            <Link
+              to="/admin/users"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary transition text-sm lg:text-base"
+            >
+              Customer Info
+            </Link>
           )}
 
           {/* User Section */}

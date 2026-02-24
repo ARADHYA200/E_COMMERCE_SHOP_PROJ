@@ -105,6 +105,11 @@ const AdminProducts = () => {
       category: product.category || "Electronics",
     });
     setEditingId(product._id);
+    // ✅ Scroll page to top smoothly
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const handleDelete = async (id) => {

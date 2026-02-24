@@ -2,10 +2,12 @@ import { useState } from "react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 const RegisterCustomer = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,19 +23,25 @@ const RegisterCustomer = () => {
 
   const handleRegister = async () => {
     if (!formData.name || !formData.email || !formData.password) {
-        toast.error("Please fill all fields");
-        return;
+      toast.error("Please fill all fields");
+      return;
     }
 
     try {
-        const { data } = await API.post("/auth/register", formData);
-        localStorage.setItem("user", JSON.stringify(data));
-        toast.success("Registration successful");
-        window.location.href = "/";
+      const { data } = await API.post("/auth/register", formData);
+
+      // Optional: Agar backend login bhi karwa raha hai to store kar sakte ho
+      localStorage.setItem("user", JSON.stringify(data));
+
+      toast.success("🎉 Registration successful! Please login to continue.");
+
+      // Redirect to login instead of homepage
+      navigate("/login");
+
     } catch (error) {
-        toast.error(error.response?.data?.message || "Registration failed");
+      toast.error(error.response?.data?.message || "Registration failed");
     }
-    };
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-6 sm:py-12">
@@ -63,13 +71,20 @@ const RegisterCustomer = () => {
           onChange={handleChange}
         />
 
-        <Button variant="primary" className="w-full" onClick={handleRegister}>
+        <Button
+          variant="primary"
+          className="w-full"
+          onClick={handleRegister}
+        >
           Register
         </Button>
 
         <p className="text-center text-xs sm:text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
+          <Link
+            to="/login"
+            className="text-primary font-medium hover:underline"
+          >
             Login
           </Link>
         </p>
