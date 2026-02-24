@@ -1,70 +1,207 @@
-import Button from "../components/ui/Button";
-import Card from "../components/ui/Card";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
-  
-  // Read user synchronously from localStorage to avoid flicker
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
 
-  // Determine admin flag in a safe way. Prefer explicit `isAdmin`,
-  // fall back to role === 'admin' when `isAdmin` isn't present.
-  const isAdmin = Boolean(
-    userInfo?.isAdmin === true || userInfo?.role === "admin"
-  );
+  const isLoggedIn = !!userInfo;
+  const isAdmin =
+    userInfo?.isAdmin === true || userInfo?.role === "admin";
 
-  // Buttons visible when no user OR when a non-admin customer is logged in
   const showHeroButtons = !isAdmin;
 
+  const products = [
+    {
+      id: 1,
+      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+      name: "Smartphone Pro",
+    },
+    {
+      id: 2,
+      image: "https://imgs.search.brave.com/CY6ww4rBrFjgcPKRNaF6MhV6u9mBCyQ6D4479sewGE4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG9ydHJvbmljcy5j/b20vY2RuL3Nob3Av/ZmlsZXMvUG9ydHJv/bmljc19NdWZmc19N/Nl9XaXJlbGVzc19I/ZWFkcGhvbmVzX2Zv/cl9kYWlseV9saXN0/ZW5pbmcuanBnP3Y9/MTc2NTQ1MDIwOCZ3/aWR0aD01MzM",
+      name: "Wireless Headphones",
+    },
+    {
+      id: 3,
+      image: "https://imgs.search.brave.com/oDrhh6QlmqYWyVDvaNippm5i31LIJkqMT7v57L12qIU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/NzF2V0ZnYm9mWUwu/anBn",
+      name: "Smart Fitness Watch",
+    },
+    {
+      id: 4,
+      image: "https://imgs.search.brave.com/mzgWXWACHO-SvojXEQlhJ3xpDykM39oTtnoTqoUO6YM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/c3R1ZmYudHYvd3At/Y29udGVudC91cGxv/YWRzL3NpdGVzLzIv/MjAyMi8wNC9TdHVm/Zi1CZXN0LUxhcHRv/cC1NaWNyb3NvZnQt/U3VyZmFjZS1TdHVk/aW8ucG5nP3c9MTAy/NA",
+      name: "Premium Laptop",
+    },
+  ];
+
   return (
-    <div className="space-y-16">
+    <div className="overflow-hidden">
 
-      {/* Hero Section */}
-      <section className="text-center py-8 sm:py-12 md:py-16">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
-          Modern Wholesale & Retail <br className="hidden sm:inline" />
-          <span className="text-primary">E-Commerce Platform</span>
-        </h1>
+      {/* ================= HERO ================= */}
+      <section className="py-24 bg-gradient-to-br 
+        from-indigo-50 via-white to-blue-100 
+        dark:from-gray-900 dark:via-gray-950 dark:to-black">
 
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
-          Scalable, professional and enterprise-ready e-commerce system
-          designed for both wholesale and retail businesses.
-        </p>
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
 
-        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
-          {showHeroButtons && (
-            <>
-              <Button variant="primary" className="w-full sm:w-auto" onClick={() => navigate("/products")}>Shop Now</Button>
-              <Button variant="secondary" className="w-full sm:w-auto" onClick={() => navigate("/products")}>Explore Products</Button>
-            </>
-          )}
+          <div className="space-y-8">
+            <h1 className="text-5xl md:text-6xl font-bold leading-tight 
+              text-gray-900 dark:text-white">
+              Modern Wholesale &
+              <span className="text-primary block">
+                Retail Commerce
+              </span>
+            </h1>
+
+            <p className="text-lg max-w-xl 
+              text-gray-600 dark:text-gray-400">
+              Built for next-gen businesses with scalable infrastructure,
+              powerful inventory management and secure transactions.
+            </p>
+
+            {showHeroButtons && (
+              <div className="flex gap-4 flex-wrap">
+                <button
+                  onClick={() => navigate("/products")}
+                  className="bg-primary text-white px-8 py-3 rounded-xl hover:scale-105 transition"
+                >
+                  Explore Collection
+                </button>
+
+                <button
+                  onClick={() => navigate("/register")}
+                  className="bg-gray-200 text-gray-800 
+                    dark:bg-gray-800 dark:text-white
+                    px-8 py-3 rounded-xl hover:scale-105 transition"
+                >
+                  Register Now
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-6 text-sm pt-2 
+              text-gray-500 dark:text-gray-400 flex-wrap">
+              <span>✔ 10K+ Customers</span>
+              <span>✔ Secure Payments</span>
+              <span>✔ Fast Delivery</span>
+              <span>✔ 24/7 Support</span>
+            </div>
+          </div>
+
+          <div className="relative flex justify-center">
+            <div className="absolute w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
+
+            <img
+              src="https://imgs.search.brave.com/8GG5sMAF0xBRBfVMM6ARfZ1hy6QOtGDrBBBRqapXCOw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90aHVt/YnMuZHJlYW1zdGlt/ZS5jb20vYi9lLWNv/bW1lcmNlLWNvbmNl/cHQtZmVtYWxlLWhh/bmQtdG91Y2hpbmct/cG9pbnRpbmctZmlu/YW5jaWFsLWljb25z/LWlzb2xhdGVkLXdo/aXRlLWJhY2tncm91/bmQtMzI4NDQ1MTQu/anBn"
+              alt="Ecommerce"
+              className="relative rounded-3xl shadow-2xl w-96"
+            />
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <Card>
-          <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Quick and secure shipping with professional logistics.
-          </p>
-        </Card>
+      {/* ================= FEATURES ================= */}
+      <section className="py-20 max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
 
-        <Card>
-          <h3 className="text-xl font-semibold mb-2">Wholesale Pricing</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Competitive pricing tailored for distributors and retailers.
-          </p>
-        </Card>
-
-        <Card>
-          <h3 className="text-xl font-semibold mb-2">Secure Payments</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Enterprise-grade security and encrypted transactions.
-          </p>
-        </Card>
+        {[
+          { icon: "🚚", title: "Fast Delivery", desc: "Quick and secure shipping powered by professional logistics partners." },
+          { icon: "💰", title: "Wholesale Pricing", desc: "Competitive bulk pricing tailored for retailers and distributors." },
+          { icon: "🔒", title: "Secure Payments", desc: "Enterprise-grade security and fully encrypted checkout system." },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="p-8 rounded-2xl transition hover:-translate-y-2
+              bg-white shadow-md
+              dark:bg-gray-900 dark:shadow-none"
+          >
+            <div className="text-3xl mb-4">{item.icon}</div>
+            <h3 className="text-xl font-semibold mb-2
+              text-gray-900 dark:text-white">
+              {item.title}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              {item.desc}
+            </p>
+          </div>
+        ))}
       </section>
+
+      {/* ================= TRENDING ================= */}
+      <section className="py-20 bg-gray-50 dark:bg-black">
+
+        <h2 className="text-3xl font-bold text-center mb-12
+          text-gray-900 dark:text-white">
+          Trending Products
+        </h2>
+
+        <div className="overflow-hidden">
+          <div className="flex gap-10 animate-scroll w-max">
+
+            {[...products, ...products].map((product, index) => (
+              <div
+                key={index}
+                className="w-80 rounded-2xl overflow-hidden
+                  shadow-md transition hover:-translate-y-3
+                  bg-white dark:bg-gray-900"
+              >
+
+                {/* Image Container */}
+                <div className="h-72 flex items-center justify-center
+                  bg-gray-100 dark:bg-gray-800 p-6">
+
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="max-h-full max-w-full object-contain"
+                  />
+
+                </div>
+
+                {/* Title */}
+                <div className="p-6 text-center">
+                  <h4 className="font-semibold
+                    text-gray-900 dark:text-white">
+                    {product.name}
+                  </h4>
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+        </div>
+
+      </section>
+
+      {/* ================= CTA ================= */}
+      {!isLoggedIn && (
+        <section className="py-20 text-center bg-primary">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Ready to Grow Your Business?
+          </h2>
+          <p className="text-white/90 mb-8">
+            Join thousands of wholesalers and retailers using our
+            enterprise-grade commerce system.
+          </p>
+
+          <button
+            onClick={() => navigate("/register")}
+            className="bg-white text-primary px-8 py-3 rounded-xl font-semibold hover:scale-105 transition"
+          >
+            Create an Account
+          </button>
+        </section>
+      )}
+
+      {/* ============== SCROLL ANIMATION ============== */}
+      <style jsx>{`
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-scroll {
+          animation: scroll 25s linear infinite;
+        }
+      `}</style>
 
     </div>
   );

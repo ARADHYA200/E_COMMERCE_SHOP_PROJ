@@ -50,7 +50,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 mt-20 transition-colors border-t border-gray-300 dark:border-gray-800">
+    <footer className="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 transition-colors border-t border-gray-300 dark:border-gray-800">
 
       {/* ================= NEWSLETTER ================= */}
       {user && (
