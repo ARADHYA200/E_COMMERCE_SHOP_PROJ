@@ -13,7 +13,7 @@ const Home = () => {
   const products = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9",
+      image: "https://imgs.search.brave.com/pU5r8T1LU1OqHDIpsD3Z0xgar2VAkE-2iF0Mu6JTTs8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2Rpc2NvdW50LmNv/bS9wZHQyLzMvMS84/LzEvMzAweDMwMC9h/YWFwbzg3MzE4L3J3/L3NtYXJ0cGhvbmUt/LS1yZWFsbWUtMTQt/cHJvLTVnLmpwZw",
       name: "Smartphone Pro",
     },
     {
