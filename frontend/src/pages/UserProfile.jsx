@@ -27,9 +27,9 @@ const UserProfile = () => {
     confirmPassword: "",
   });
 
-  const BASE_URL =
-    import.meta.env.VITE_SERVER_URL ||
-    "https://e-commerce-shop-proj.onrender.com";
+  const BASE_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace("/api", "")
+  : "https://e-commerce-shop-proj.onrender.com";
 
   /* =========================================
       FETCH PROFILE + STATS
