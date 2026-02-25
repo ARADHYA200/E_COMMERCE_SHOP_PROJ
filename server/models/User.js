@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = mongoose.Schema(
   {
@@ -11,6 +12,9 @@ const userSchema = mongoose.Schema(
       required: true,
       unique: true,
     },
+    phone: {                    // ✅ Added
+      type: String,
+    },
     password: {
       type: String,
       required: true,
@@ -18,7 +22,7 @@ const userSchema = mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
+      default: "user",
     },
     isVerified: {
       type: Boolean,
@@ -27,11 +31,27 @@ const userSchema = mongoose.Schema(
     verificationToken: {
       type: String,
     },
+    profileImage: {
+      type: String,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+
+// 🔐 HASH PASSWORD BEFORE SAVE
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+
+// 🔐 PASSWORD MATCH METHOD (Best Practice)
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 

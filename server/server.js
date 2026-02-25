@@ -10,6 +10,9 @@ import adminRoutes from "./routes/adminRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import path from "path";
+
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 dotenv.config();
@@ -46,17 +49,23 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Running...");
 });
 
-// Error handling middleware (must be last)
-app.use(notFound);
-app.use(errorHandler);
+
+
+const __dirname = path.resolve();
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Error handling middleware (must be last)
+app.use(notFound);
+app.use(errorHandler);

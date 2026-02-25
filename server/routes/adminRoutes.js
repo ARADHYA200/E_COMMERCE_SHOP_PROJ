@@ -96,5 +96,4 @@ router.put("/users/:id/remove-admin", protect, admin, async (req, res) => {
   }
 });
 
-
 export default router;
