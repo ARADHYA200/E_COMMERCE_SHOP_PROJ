@@ -3,6 +3,22 @@ import { Link } from "react-router-dom";
 import API from "../services/api";
 import { toast } from "react-toastify";
 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from "recharts";
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
 
@@ -31,16 +47,32 @@ const AdminDashboard = () => {
     );
   }
 
+  const statusData = Object.entries(stats.statusCounts || {}).map(
+    ([name, value]) => ({
+      name,
+      value,
+    })
+  );
+
+  const PIE_COLORS = [
+    "#facc15",
+    "#3b82f6",
+    "#6366f1",
+    "#10b981",
+    "#ef4444",
+    "#8b5cf6",
+  ];
+
   return (
     <div className="space-y-10 px-4 sm:px-6 lg:px-8 pb-10">
 
       {/* HEADER */}
-      <div className="space-y-2">
+      <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
           Admin Dashboard
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">
-          Monitor platform performance, users, revenue and inventory insights.
+        <p className="text-gray-500 dark:text-gray-400">
+          Business Intelligence & Analytics Center
         </p>
       </div>
 
@@ -49,93 +81,214 @@ const AdminDashboard = () => {
 
         <Link
           to="/admin/products"
-          className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-5 rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition"
+          className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-5 rounded-2xl shadow-md hover:scale-[1.02] transition"
         >
           <h3 className="font-semibold text-lg">Manage Products</h3>
-          <p className="text-sm opacity-90">Add, edit or update product inventory</p>
+          <p className="text-sm opacity-90">
+            Add, edit or update inventory
+          </p>
         </Link>
 
         <Link
           to="/admin/orders"
-          className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-5 rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition"
+          className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-5 rounded-2xl shadow-md hover:scale-[1.02] transition"
         >
           <h3 className="font-semibold text-lg">Manage Orders</h3>
-          <p className="text-sm opacity-90">Track and manage customer orders</p>
+          <p className="text-sm opacity-90">
+            Track and manage orders
+          </p>
         </Link>
 
         <Link
           to="/admin/coupons"
-          className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-5 rounded-2xl shadow-md hover:shadow-lg hover:scale-[1.02] transition"
+          className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-5 rounded-2xl shadow-md hover:scale-[1.02] transition"
         >
           <h3 className="font-semibold text-lg">Manage Coupons</h3>
-          <p className="text-sm opacity-90">Create and control discounts</p>
+          <p className="text-sm opacity-90">
+            Create and control discounts
+          </p>
         </Link>
 
       </div>
 
-      {/* STATS SECTION */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
 
-        {/* Total Users */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm text-gray-500">Total Users</h2>
-            <span className="bg-indigo-100 text-indigo-600 text-xs px-3 py-1 rounded-full">
-              Users
-            </span>
-          </div>
-          <p className="text-3xl font-bold mt-3">{stats.totalUsers}</p>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h3 className="text-gray-500 text-sm">Users</h3>
+          <p className="text-3xl font-bold mt-2">{stats.totalUsers}</p>
         </div>
 
-        {/* Total Products */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm text-gray-500">Total Products</h2>
-            <span className="bg-yellow-100 text-yellow-600 text-xs px-3 py-1 rounded-full">
-              Inventory
-            </span>
-          </div>
-          <p className="text-3xl font-bold mt-3">{stats.totalProducts}</p>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h3 className="text-gray-500 text-sm">Products</h3>
+          <p className="text-3xl font-bold mt-2">{stats.totalProducts}</p>
         </div>
 
-        {/* Total Orders */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm text-gray-500">Total Orders</h2>
-            <span className="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full">
-              Sales
-            </span>
-          </div>
-          <p className="text-3xl font-bold mt-3">{stats.totalOrders}</p>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h3 className="text-gray-500 text-sm">Orders</h3>
+          <p className="text-3xl font-bold mt-2">{stats.totalOrders}</p>
         </div>
 
-        {/* Total Revenue */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm text-gray-500">Total Revenue</h2>
-            <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
-              Revenue
-            </span>
-          </div>
-          <p className="text-3xl font-bold mt-3 text-green-600">
-            ₹{stats.totalRevenue}
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h3 className="text-gray-500 text-sm">Revenue</h3>
+          <p className="text-3xl font-bold mt-2 text-green-600">
+            ₹{stats.totalRevenue?.toLocaleString()}
           </p>
         </div>
 
-        {/* Low Stock */}
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm text-gray-500">Low Stock Products</h2>
-            <span className="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full">
-              Alert
-            </span>
-          </div>
-          <p className="text-3xl font-bold mt-3 text-red-600">
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h3 className="text-gray-500 text-sm">Low Stock</h3>
+          <p className="text-3xl font-bold mt-2 text-red-500">
             {stats.lowStockProducts}
           </p>
         </div>
 
       </div>
+
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+
+        {/* Revenue */}
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h2 className="font-semibold text-lg mb-4">
+            Revenue Trend
+          </h2>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={stats.monthlyStats}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#10b981"
+                fill="#10b981"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Orders */}
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h2 className="font-semibold text-lg mb-4">
+            Orders Trend
+          </h2>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={stats.monthlyStats}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="orders" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+      </div>
+
+      {/* PIE + TOP PRODUCTS */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+
+        {/* Order Status */}
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h2 className="font-semibold text-lg mb-4">
+            Order Status Distribution
+          </h2>
+
+          <ResponsiveContainer width="100%" height={320}>
+            <PieChart>
+              <Pie
+                data={statusData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={110}
+                label
+              >
+                {statusData.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={PIE_COLORS[index % PIE_COLORS.length]}
+                  />
+                ))}
+              </Pie>
+
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Top Products */}
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+          <h2 className="font-semibold text-lg mb-4">
+            Top Selling Products
+          </h2>
+
+          <div className="space-y-4">
+            {stats.topProducts?.map((product, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center border-b pb-3"
+              >
+                <span>{product.name}</span>
+                <span className="font-bold text-green-600">
+                  {product.sold} sold
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* RECENT ORDERS */}
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow">
+        <h2 className="font-semibold text-lg mb-4">
+          Recent Orders
+        </h2>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-3">Customer</th>
+                <th className="text-left py-3">Amount</th>
+                <th className="text-left py-3">Status</th>
+                <th className="text-left py-3">Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {stats.recentOrders?.map((order) => (
+                <tr
+                  key={order._id}
+                  className="border-b"
+                >
+                  <td className="py-3">{order.customer}</td>
+                  <td className="py-3">
+                    ₹{order.amount}
+                  </td>
+                  <td className="py-3">
+                    {order.status}
+                  </td>
+                  <td className="py-3">
+                    {new Date(
+                      order.createdAt
+                    ).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
     </div>
   );
 };

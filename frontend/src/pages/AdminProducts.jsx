@@ -8,6 +8,7 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -56,6 +57,8 @@ const AdminProducts = () => {
       stock: "",
       category: "Electronics",
     });
+
+    setImageFile(null);
     setEditingId(null);
   };
 
@@ -67,8 +70,36 @@ const AdminProducts = () => {
 
     try {
       setLoading(true);
+      let imageUrl = formData.image;
+
+      if (
+        imageFile &&
+        imageFile.size > 2 * 1024 * 1024
+      ) {
+        toast.error("Image must be less than 2MB");
+        setLoading(false);
+        return;
+      }
+      if (imageFile) {
+        const uploadData = new FormData();
+        uploadData.append("image", imageFile);
+
+        const { data } = await API.post(
+          "/upload",
+          uploadData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        imageUrl = data.imageUrl;
+      }
+
       const payload = {
         ...formData,
+        image: imageUrl,
         price: Number(formData.price),
         stock: Number(formData.stock),
       };
@@ -104,6 +135,7 @@ const AdminProducts = () => {
       stock: product.stock,
       category: product.category || "Electronics",
     });
+    setImageFile(null);
     setEditingId(product._id);
     // ✅ Scroll page to top smoothly
     window.scrollTo({
@@ -193,13 +225,30 @@ const AdminProducts = () => {
           <option value="Accessories">Accessories</option>
         </select>
 
-        <input
-          name="image"
-          placeholder="Image URL"
-          value={formData.image}
-          onChange={handleChange}
-          className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-lg dark:bg-gray-800"
-        />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">
+            Product Image
+          </label>
+
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800"
+          />
+
+          {(imageFile || formData.image) && (
+            <img
+              src={
+                imageFile
+                  ? URL.createObjectURL(imageFile)
+                  : formData.image
+              }
+              alt="preview"
+              className="w-24 h-24 object-cover rounded-lg border"
+            />
+          )}
+        </div>
 
         <textarea
           name="description"

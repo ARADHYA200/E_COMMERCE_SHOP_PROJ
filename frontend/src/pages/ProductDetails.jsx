@@ -5,6 +5,7 @@ import Button from "../components/ui/Button";
 import { CartContext } from "../context/CartContext";
 import { WishlistContext } from "../context/WishlistContext";
 import { toast } from "react-toastify";
+import ProductCard from "../components/ProductCard";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -23,18 +24,22 @@ const ProductDetails = () => {
   const [comment, setComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState(null);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
         setLoading(true);
 
-        const [productRes, reviewsRes] = await Promise.all([
+        const [productRes, reviewsRes, recommendationRes] =
+        await Promise.all([
           API.get(`/products/${id}`),
-          API.get(`/reviews/${id}`)
+          API.get(`/reviews/${id}`),
+          API.get(`/products/${id}/recommendations`)
         ]);
 
         setProduct(productRes.data);
+        setRecommendedProducts(recommendationRes.data);
 
         const fetchedReviews = reviewsRes.data.reviews || [];
         setReviews(fetchedReviews);
@@ -317,6 +322,30 @@ const ProductDetails = () => {
           ))
         )}
       </div>
+      {/* RECOMMENDED PRODUCTS */}
+
+    {recommendedProducts.length > 0 && (
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold">
+            You May Also Like
+          </h2>
+
+          <p className="text-gray-500 mt-1">
+            Similar products from the same category
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {recommendedProducts.map((item) => (
+            <ProductCard
+              key={item._id}
+              product={item}
+            />
+          ))}
+        </div>
+      </div>
+    )}
     </div>
   );
 };

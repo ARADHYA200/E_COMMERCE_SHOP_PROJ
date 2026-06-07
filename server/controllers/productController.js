@@ -92,3 +92,30 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
+
+// GET RECOMMENDED PRODUCTS
+export const getRecommendedProducts = async (req, res) => {
+  try {
+    const currentProduct = await Product.findById(req.params.id);
+
+    if (!currentProduct) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    const recommendations = await Product.find({
+      _id: { $ne: currentProduct._id },
+      category: currentProduct.category,
+    })
+      .limit(4)
+      .lean();
+
+    res.json(recommendations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to fetch recommendations",
+    });
+  }
+};

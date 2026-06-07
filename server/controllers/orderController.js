@@ -3,7 +3,14 @@ import Product from "../models/Product.js";
 
 export const createOrder = async (req, res) => {
   try {
-    const { orderItems, shippingAddress, totalAmount } = req.body;
+    const {
+      orderItems,
+      shippingAddress,
+      totalAmount,
+      paymentMethod,
+      paymentStatus,
+      transactionId,
+    } = req.body;
 
     if (!orderItems || !orderItems.length) {
       return res.status(400).json({ message: "No order items" });
@@ -33,6 +40,13 @@ export const createOrder = async (req, res) => {
       orderItems,
       shippingAddress,
       totalAmount,
+
+      paymentMethod: paymentMethod || "COD",
+
+      paymentStatus:
+        paymentStatus || "Pending",
+
+      transactionId: transactionId || null,
     });
 
     // Populate user details

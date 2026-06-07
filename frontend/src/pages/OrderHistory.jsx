@@ -297,6 +297,25 @@ const OrderHistory = () => {
                   <p className="text-xs sm:text-sm break-all"><span className="font-semibold">Shipping Address:</span> {order.shippingAddress.address}</p>
                   <p className="text-xs sm:text-sm"><span className="font-semibold">Phone:</span> {order.shippingAddress.phone}</p>
                 </div>
+                
+                <div className="bg-blue-50 dark:bg-gray-800 p-3 rounded space-y-1">
+                  <p className="text-sm">
+                    <span className="font-semibold">Payment Method:</span>
+                    {order.paymentMethod}
+                  </p>
+
+                  <p className="text-sm">
+                    <span className="font-semibold">Payment Status:</span>
+                    {order.paymentStatus}
+                  </p>
+
+                  {order.transactionId && (
+                    <p className="text-sm">
+                      <span className="font-semibold">Transaction ID:</span>
+                      {order.transactionId}
+                    </p>
+                  )}
+                </div>
 
                 <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 text-xs sm:text-sm">
                   <span className="text-gray-600 dark:text-gray-400 flex items-center gap-2">

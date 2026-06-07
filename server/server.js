@@ -1,5 +1,5 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
@@ -12,10 +12,12 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import path from "path";
+import uploadRoutes from "./routes/uploadRoutes.js";
+
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
-dotenv.config();
+
 
 connectDB();
 
@@ -50,7 +52,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/upload", uploadRoutes);
 app.get("/", (req, res) => {
   res.send("API Running...");
 });

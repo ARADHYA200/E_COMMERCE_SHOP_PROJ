@@ -20,6 +20,8 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -57,6 +59,11 @@ const handleOrder = async () => {
     }
 
     try {
+      const transactionId =
+        paymentMethod === "COD"
+          ? null
+          : `TXN_${Date.now()}`;
+
       const orderData = {
         orderItems: cartItems.map((item) => ({
           product: item._id,
@@ -64,8 +71,19 @@ const handleOrder = async () => {
           quantity: item.quantity,
           price: item.price,
         })),
+
         shippingAddress: formData,
+
         totalAmount: totalPrice - discount,
+
+        paymentMethod,
+
+        paymentStatus:
+          paymentMethod === "COD"
+            ? "Pending"
+            : "Paid",
+
+        transactionId,
       };
 
       await API.post("/orders", orderData);
@@ -85,6 +103,7 @@ const handleOrder = async () => {
   };
 
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 px-4 sm:px-6">
 
       {/* Shipping Form */}
@@ -112,7 +131,31 @@ const handleOrder = async () => {
           onChange={handleChange}
         />
 
-        <Button variant="primary" onClick={handleOrder} className="w-full">
+        <div className="space-y-2">
+          <label className="font-semibold">Payment Method</label>
+
+          <select
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value)}
+            className="w-full border rounded-lg p-3 dark:bg-gray-800"
+          >
+            <option value="COD">Cash on Delivery</option>
+            <option value="UPI">UPI (Demo)</option>
+            <option value="CARD">Card (Demo)</option>
+          </select>
+        </div>
+
+        <Button
+          variant="primary"
+          className="w-full"
+          onClick={() => {
+            if (paymentMethod === "COD") {
+              handleOrder();
+            } else {
+              setShowPaymentModal(true);
+            }
+          }}
+        >
           Place Order
         </Button>
       </div>
@@ -168,6 +211,53 @@ const handleOrder = async () => {
       </div>
 
     </div>
+        {showPaymentModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-900 p-6 rounded-xl w-[90%] max-w-md shadow-xl">
+              
+              <h2 className="text-xl font-bold mb-4">
+                {paymentMethod} Payment (Demo)
+              </h2>
+
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Amount: ₹{totalPrice - discount}
+              </p>
+
+              <div className="flex flex-col gap-3">
+                
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    toast.success("Payment Successful ✅");
+                    setShowPaymentModal(false);
+                    handleOrder();
+                  }}
+                >
+                  ✅ Payment Success
+                </Button>
+
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setShowPaymentModal(false);
+                    toast.error("Payment Failed ❌");
+                  }}
+                >
+                  ❌ Payment Failed
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowPaymentModal(false)}
+                >
+                  Close
+                </Button>
+
+              </div>
+            </div>
+          </div>
+        )}
+  </>
   );
 };
 
