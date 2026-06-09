@@ -20,28 +20,55 @@ const RegisterCustomer = () => {
       [e.target.name]: e.target.value,
     });
   };
-
+  
+  const [loading, setLoading] =useState(false);
   const handleRegister = async () => {
-    if (!formData.name || !formData.email || !formData.password) {
-      toast.error("Please fill all fields");
+
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.password
+    ) {
+      toast.error(
+        "Please fill all fields"
+      );
       return;
     }
 
     try {
-      const { data } = await API.post("/auth/register", formData);
 
-      // Optional: Agar backend login bhi karwa raha hai to store kar sakte ho
-      localStorage.setItem("user", JSON.stringify(data));
+      setLoading(true);
 
-      toast.success("🎉 Registration successful! Please login to continue.");
+      await API.post(
+        "/auth/register",
+        formData
+      );
 
-      // Redirect to login instead of homepage
-      navigate("/login");
+      toast.success(
+        "Registration Successful ✅"
+      );
+
+      toast.info(
+        "Verification Email Sent 📧"
+      );
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
 
     } catch (error) {
-      toast.error(error.response?.data?.message || "Registration failed");
+
+      toast.error(
+        error.response?.data?.message ||
+        "Registration Failed"
+      );
+
+    } finally {
+
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-6 sm:py-12">
@@ -71,12 +98,18 @@ const RegisterCustomer = () => {
           onChange={handleChange}
         />
 
+
         <Button
           variant="primary"
           className="w-full"
           onClick={handleRegister}
+          disabled={loading}
         >
-          Register
+          {
+            loading
+              ? "Creating Account..."
+              : "Register"
+          }
         </Button>
 
         <p className="text-center text-xs sm:text-sm">

@@ -101,6 +101,14 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+
+      if (!user.isVerified) {
+        return res.status(401).json({
+          message:
+            "Please verify your email before login.",
+        });
+      }
+
       return res.json({
         _id: user._id,
         name: user.name,
@@ -150,6 +158,109 @@ export const verifyEmail = async (req, res) => {
 
     res.status(500).json({
       message: "Server error during verification.",
+    });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const resetToken =
+      crypto.randomBytes(32).toString("hex");
+
+    user.resetPasswordToken = resetToken;
+
+    await user.save();
+
+    const resetUrl =
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+
+    await sendEmail(
+      user.email,
+      "Reset Password",
+      `
+      <h2>Password Reset</h2>
+
+      <p>
+        Click below link to reset password
+      </p>
+
+      <a href="${resetUrl}">
+        Reset Password
+      </a>
+      `
+    );
+
+    res.json({
+      message:
+        "Password reset email sent",
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+
+  try {
+
+    const user = await User.findOne({
+      resetPasswordToken:
+        req.params.token,
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message:
+          "Invalid reset token",
+      });
+    }
+
+    if (!req.body.password) {
+      return res.status(400).json({
+        message: "Password required",
+      });
+    }
+
+    if (req.body.password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    user.password = req.body.password;
+
+    user.resetPasswordToken = undefined;
+
+    await user.save();
+
+    res.json({
+      message:
+        "Password updated successfully",
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server Error",
     });
   }
 };

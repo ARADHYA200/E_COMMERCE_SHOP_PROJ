@@ -10,6 +10,7 @@ const LoginCustomer = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -20,19 +21,33 @@ const LoginCustomer = () => {
 
   const handleLogin = async () => {
     if (!formData.email || !formData.password) {
-        toast.error("Please fill all fields");
-        return;
+      toast.error("Please fill all fields");
+      return;
     }
 
     try {
-        const { data } = await API.post("/auth/login", formData);
-        localStorage.setItem("user", JSON.stringify(data));
-        toast.success("Login successful");
-        window.location.href = "/";
+      setLoading(true);
+
+      const { data } = await API.post("/auth/login", formData);
+
+      localStorage.setItem("user", JSON.stringify(data));
+
+      toast.success("Login Successful ✅");
+
+      window.location.href = "/";
+
     } catch (error) {
-        toast.error(error.response?.data?.message || "Invalid credentials");
+
+      toast.error(
+        error.response?.data?.message ||
+        "Invalid credentials"
+      );
+
+    } finally {
+
+      setLoading(false);
     }
-    };
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 py-6 sm:py-12">
@@ -41,6 +56,7 @@ const LoginCustomer = () => {
 
         <Input
           label="Email"
+          type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
@@ -54,9 +70,27 @@ const LoginCustomer = () => {
           onChange={handleChange}
         />
 
-        <Button variant="primary" className="w-full" onClick={handleLogin}>
-          Login
+        <Button
+          variant="primary"
+          className="w-full"
+          disabled={loading}
+          onClick={handleLogin}
+        >
+          {
+            loading
+              ? "Signing In..."
+              : "Login"
+          }
         </Button>
+
+        <p className="text-center text-sm">
+          <Link
+            to="/forgot-password"
+            className="text-primary hover:underline"
+          >
+            Forgot Password?
+          </Link>
+        </p>
 
         <p className="text-center text-xs sm:text-sm">
           Don't have an account?{" "}

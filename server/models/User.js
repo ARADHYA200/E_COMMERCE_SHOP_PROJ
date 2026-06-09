@@ -31,6 +31,9 @@ const userSchema = mongoose.Schema(
     verificationToken: {
       type: String,
     },
+    resetPasswordToken: {
+      type: String,
+    },
     profileImage: {
       type: String,
     },

@@ -15,7 +15,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OrderHistory from "./pages/OrderHistory";
 import UserProfile from "./pages/UserProfile";
 import Wishlist from "./pages/Wishlist";
-import PasswordReset from "./pages/PasswordReset";
+// import PasswordReset from "./pages/PasswordReset";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminProducts from "./pages/AdminProducts";
@@ -23,6 +23,8 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCoupons from "./pages/AdminCoupons";
 import VerifyEmail from "./pages/VerifyEmail";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -37,6 +39,15 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetails />} />
+              <Route
+                path="/forgot-password"
+                element={<ForgotPassword />}
+              />
+
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
 
               <Route
                 path="/cart"
@@ -67,7 +78,7 @@ function App() {
 
               <Route path="/login" element={<LoginCustomer />} />
               <Route path="/register" element={<RegisterCustomer />} />
-              <Route path="/forgot-password" element={<PasswordReset />} />
+              {/* <Route path="/forgot-password" element={<PasswordReset />} /> */}
               <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
               <Route
