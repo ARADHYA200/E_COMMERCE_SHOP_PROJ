@@ -10,6 +10,9 @@ const sendEmail = async (to, subject, html) => {
       pass: process.env.EMAIL_PASS,
     },
   });
+  
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS EXISTS:", !!process.env.EMAIL_PASS);
 
   const info = await transporter.sendMail({
     from: '"E-Commerce Shop" <aradhyaagarwal2k131987@gmail.com>',
