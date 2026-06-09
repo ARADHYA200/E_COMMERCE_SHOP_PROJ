@@ -27,10 +27,6 @@ const UserProfile = () => {
     confirmPassword: "",
   });
 
-  const BASE_URL = import.meta.env.VITE_API_URL
-  ? import.meta.env.VITE_API_URL.replace("/api", "")
-  : "https://e-commerce-shop-proj.onrender.com";
-
   /* =========================================
       FETCH PROFILE + STATS
   ========================================= */
@@ -146,7 +142,7 @@ const UserProfile = () => {
             <div className="rounded-full overflow-hidden border-4 border-white shadow-lg ring-4 ring-indigo-500/40">
               {user.profileImage ? (
                 <img
-                  src={`${BASE_URL}${user.profileImage}`}
+                  src={user.profileImage}
                   alt="profile"
                   className="w-28 h-28 object-cover"
                 />

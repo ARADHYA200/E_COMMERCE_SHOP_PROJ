@@ -1,7 +1,8 @@
 import express from "express";
 import User from "../models/User.js";
 import { protect } from "../middleware/authMiddleware.js";
-import upload from "../middleware/uploadMiddleware.js";
+import profileUpload from "../middleware/profileUploadMiddleware.js";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const router = express.Router();
 router.put(
   "/profile",
   protect,
-  upload.single("profileImage"),
+  profileUpload.single("profileImage"),
   async (req, res) => {
     try {
       const user = await User.findById(req.user._id);
@@ -27,7 +28,20 @@ router.put(
 
       // If new image uploaded
       if (req.file) {
-        user.profileImage = `/uploads/${req.file.filename}`;
+
+        const base64 =
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+
+        const result = await cloudinary.uploader.upload(
+          base64,
+          {
+            folder: "ecommerce_profiles",
+            public_id: `user_${user._id}`,
+            overwrite: true,
+          }
+        );
+
+        user.profileImage = result.secure_url;
       }
 
       const updatedUser = await user.save();
