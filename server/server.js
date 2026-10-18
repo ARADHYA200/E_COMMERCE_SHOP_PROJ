@@ -13,7 +13,11 @@ import wishlistRoutes from "./routes/wishlistRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 // import path from "path";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import coShopRoutes from "./routes/coShopRoutes.js";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 
+import setupCoShopSocket from "./socket/coShopSocket.js";
 
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
@@ -28,6 +32,17 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://e-commerce-shop-proj.vercel.app"
 ];
+
+const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+});
+app.set("io", io);
+setupCoShopSocket(io);
 
 app.use(
   cors({
@@ -53,6 +68,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/co-shop", coShopRoutes);
 app.get("/", (req, res) => {
   res.send("API Running...");
 });
@@ -68,7 +84,11 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
 

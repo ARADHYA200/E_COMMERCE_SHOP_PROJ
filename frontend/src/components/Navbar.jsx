@@ -89,6 +89,9 @@ const Navbar = () => {
               <Link to="/orders" className="nav-link">
                 My Orders
               </Link>
+              <Link to="/co-shop" className="nav-link">
+                🛍️ Co-Shop Room
+              </Link>
             </>
           )}
 
@@ -183,6 +186,13 @@ const Navbar = () => {
 
                 <Link to="/orders" onClick={closeMobileMenu} className="mobile-link">
                   My Orders
+                </Link>
+                <Link
+                  to="/co-shop"
+                  onClick={closeMobileMenu}
+                  className="mobile-link"
+                >
+                  🛍️ Co-Shop Room
                 </Link>
               </>
             )}

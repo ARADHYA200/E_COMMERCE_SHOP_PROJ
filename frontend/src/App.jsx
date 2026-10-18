@@ -25,6 +25,7 @@ import AdminCoupons from "./pages/AdminCoupons";
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import CoShop from "./pages/CoShop";
 
 function App() {
   return (
@@ -35,128 +36,38 @@ function App() {
 
           <main className="flex-1 container mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <Routes>
-
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetails />} />
-              <Route
-                path="/forgot-password"
-                element={<ForgotPassword />}
-              />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-              <Route
-                path="/reset-password/:token"
-                element={<ResetPassword />}
-              />
-
-              <Route
-                path="/cart"
-                element={
-                  <ProtectedRoute>
-                    <Cart />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/checkout"
-                element={
-                  <ProtectedRoute>
-                    <Checkout />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/orders"
-                element={
-                  <ProtectedRoute>
-                    <OrderHistory />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+              <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+              <Route path="/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
 
               <Route path="/login" element={<LoginCustomer />} />
               <Route path="/register" element={<RegisterCustomer />} />
-              {/* <Route path="/forgot-password" element={<PasswordReset />} /> */}
               <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/wishlist"
-                element={
-                  <ProtectedRoute>
-                    <Wishlist />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              <Route path="/co-shop" element={<ProtectedRoute><CoShop /></ProtectedRoute>} />
+              <Route path="/co-shop/:roomId" element={<ProtectedRoute><CoShop /></ProtectedRoute>} />
+              <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
               {/* ADMIN ROUTES */}
-
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/products"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminProducts />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/orders"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminOrders />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/coupons"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminCoupons />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/users"
-                element={
-                  <ProtectedRoute adminOnly={true}>
-                    <AdminUsers />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/products" element={<ProtectedRoute adminOnly={true}><AdminProducts /></ProtectedRoute>} />
+              <Route path="/admin/orders" element={<ProtectedRoute adminOnly={true}><AdminOrders /></ProtectedRoute>} />
+              <Route path="/admin/coupons" element={<ProtectedRoute adminOnly={true}><AdminCoupons /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute adminOnly={true}><AdminUsers /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
 
           <Footer />
-
-          <ToastContainer
-            position="top-right"
-            autoClose={2000}
-            theme="colored"
-          />
+          <ToastContainer position="top-right" autoClose={2000} theme="colored" />
         </div>
       </Router>
     </ErrorBoundary>
