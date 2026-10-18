@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import API from "../services/api";
 import { toast } from "react-toastify";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -21,6 +21,8 @@ const CoShop = () => {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [cartBusy, setCartBusy] = useState(false);
+  const [activeTab, setActiveTab] = useState("products");
+  const roomViewRef = useRef(null);
 
   const [searchParams] = useSearchParams();
 
@@ -58,6 +60,10 @@ const CoShop = () => {
     loadRooms();
     loadProducts();
   }, [loadRooms, loadProducts]);
+
+  useEffect(() => {
+    setActiveTab("products");
+  }, [roomId]);
 
   // Restore the selected room from the URL so refreshing /co-shop/:roomId
   // keeps the user inside the same room.
@@ -550,7 +556,61 @@ const CoShop = () => {
             </div>
           )}
 
+          <nav
+            aria-label="Co-Shop room sections"
+            className="sticky top-2 z-20 rounded-2xl border border-gray-200 bg-white/95 p-2 shadow-md backdrop-blur dark:border-gray-800 dark:bg-gray-900/95"
+          >
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {[
+                { id: "products", label: "Group Products", icon: "🗳️", count: room.items?.length || 0 },
+                { id: "add", label: "Add Products", icon: "➕", count: null },
+                { id: "cart", label: "Shared Cart", icon: "🛒", count: sharedCartCount },
+                { id: "chat", label: "Room Chat", icon: "💬", count: null },
+              ].map((tab) => {
+                const disabled = tab.id === "add" && room.status !== "active";
+                const selected = activeTab === tab.id;
+
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    disabled={disabled}
+                    aria-pressed={selected}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      const roomView = roomViewRef.current;
+                      if (roomView) {
+                        const top = roomView.getBoundingClientRect().top + window.scrollY - 90;
+                        window.scrollTo({ top: Math.max(0, top), left: 0, behavior: "auto" });
+                      }
+                    }}
+                    className={`flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold transition ${
+                      selected
+                        ? "bg-indigo-600 text-white shadow-sm"
+                        : "text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                    } disabled:cursor-not-allowed disabled:opacity-40`}
+                  >
+                    <span aria-hidden="true">{tab.icon}</span>
+                    <span>{tab.label}</span>
+                    {tab.count !== null && (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs ${
+                          selected
+                            ? "bg-white/20 text-white"
+                            : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+
           {/* GROUP PRODUCTS AND VOTES */}
+          {activeTab === "products" && (
           <section className="space-y-4">
             <h3 className="text-2xl font-bold">
               Group Products & Votes
@@ -682,8 +742,10 @@ const CoShop = () => {
             )}
           </section>
 
+          )}
+
           {/* ADD PRODUCTS TO THE ROOM */}
-          {room.status === "active" && (
+          {activeTab === "add" && room.status === "active" && (
             <section className="space-y-4">
               <h3 className="text-2xl font-bold">
                 Add Products
@@ -759,6 +821,7 @@ const CoShop = () => {
           )}
 
           {/* SHARED CART */}
+          {activeTab === "cart" && (
           <section
             id="shared-cart"
             className="space-y-5 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:p-6"
@@ -958,12 +1021,15 @@ const CoShop = () => {
             )}
           </section>
 
-          {/* REAL-TIME GROUP CHAT */}
-          <CoShopChat
-            room={room}
-            user={user}
-            onRoomUpdated={setRoom}
-          />
+          )}
+
+          {activeTab === "chat" && (
+            <CoShopChat
+              room={room}
+              user={user}
+              onRoomUpdated={setRoom}
+            />
+          )}
         </section>
       )}
     </div>
