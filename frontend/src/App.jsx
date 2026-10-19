@@ -26,6 +26,8 @@ import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CoShop from "./pages/CoShop";
+import CompareProducts from "./pages/CompareProducts";
+import CompareResults from "./pages/CompareResults";
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetails />} />
+              <Route path="/compare" element={<CompareProducts />} />
+              <Route path="/compare/results" element={<CompareResults />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
 
