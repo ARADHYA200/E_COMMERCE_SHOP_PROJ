@@ -280,44 +280,60 @@ const Footer = () => {
     </div>
   </div>
 
-      {/* ================= PAYMENT METHODS ================= */}
-      <div className="border-b border-gray-300 dark:border-gray-800 py-10">
-        <h4 className="text-center font-semibold mb-8 text-gray-900 dark:text-white">
-          Secure Payment Methods
-        </h4>
 
-        <div className="flex flex-wrap justify-center items-center gap-10">
+      {/* Secure Payment Methods */}
+      <div className="border-t border-gray-300 dark:border-gray-700">
+        <div className="mx-auto flex max-w-7xl flex-col items-center px-5 py-10 sm:px-6">
 
-          {/* UPI */}
-          <img
-            src="https://imgs.search.brave.com/5i8nTOk_bQPbXmOHzJ-sCHfWm30Hs9-CK0d0zkkEPFc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wbmdo/ZHByby5jb20vd3At/Y29udGVudC90aGVt/ZXMvcG5naGRwcm8v/ZG93bmxvYWQvc29j/aWFsLW1lZGlhLWFu/ZC1icmFuZHMvdXBp/LWxvZ28ucG5n"
-            alt="UPI"
-            className="h-12 object-contain"
-          />
+          <h4 className="mb-7 text-lg font-semibold text-gray-900 dark:text-white">
+            Secure Payment Methods
+          </h4>
 
-          {/* Visa */}
-          <img
-            src="https://imgs.search.brave.com/nXFNVEqc3NW6i2fhib4CGTHWekAbNXaEUuSIIEE10gU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/ZnJlZXBuZ2xvZ29z/LmNvbS91cGxvYWRz/L3ZlcmlmaWVkLWJ5/LXZpc2EtbG9nby1w/bmctMC5wbmc"
-            alt="Visa"
-            className="h-10 object-contain"
-          />
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
 
-          {/* Mastercard */}
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-            alt="Mastercard"
-            className="h-10 object-contain"
-          />
+            {/* UPI */}
+            <span
+              className="text-2xl font-extrabold italic tracking-tight text-indigo-600"
+              title="UPI"
+            >
+              UPI
+            </span>
 
-          {/* Razorpay */}
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg"
-            alt="Razorpay"
-            className="h-10 object-contain"
-          />
+            {/* Visa */}
+            <span
+              className="text-3xl font-black italic tracking-tight text-[#1A1F71]"
+              title="Visa"
+            >
+              VISA
+            </span>
 
+            {/* Mastercard */}
+            <svg
+              viewBox="0 0 56 36"
+              className="h-9 w-14"
+              role="img"
+              aria-label="Mastercard"
+            >
+              <circle cx="21" cy="18" r="15" fill="#EB001B" />
+              <circle cx="35" cy="18" r="15" fill="#F79E1B" />
+              <path
+                d="M28 6.3a15 15 0 0 1 0 23.4 15 15 0 0 1 0-23.4"
+                fill="#FF5F00"
+              />
+            </svg>
+
+            {/* Razorpay */}
+            <span
+              className="text-2xl font-extrabold italic tracking-tight text-[#0B2D5C]"
+              title="Razorpay"
+            >
+              Razorpay
+            </span>
+
+          </div>
         </div>
       </div>
+
 
       {/* ================= COPYRIGHT ================= */}
       <div className="border-t border-gray-300 dark:border-gray-800 py-6 text-center text-sm text-gray-500 dark:text-gray-400">

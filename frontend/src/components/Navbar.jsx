@@ -51,7 +51,7 @@ const Navbar = () => {
 
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/products" className="nav-link">Products</Link>
-          <Link to="/compare" className="nav-link">⚖️ Compare Products</Link>
+          <Link to="/compare" className="nav-link">Compare Products</Link>
 
           {/* ===== ADMIN LINKS FIRST ===== */}
           {isAdmin && (
@@ -91,7 +91,7 @@ const Navbar = () => {
                 My Orders
               </Link>
               <Link to="/co-shop" className="nav-link">
-                🛍️ Co-Shop Room
+                Co-Shop Room
               </Link>
             </>
           )}
@@ -166,7 +166,7 @@ const Navbar = () => {
               onClick={closeMobileMenu}
               className="mobile-link"
             >
-              ⚖️ Compare Products
+              Compare Products
             </Link>
 
             {/* ADMIN FIRST */}
@@ -201,7 +201,7 @@ const Navbar = () => {
                   onClick={closeMobileMenu}
                   className="mobile-link"
                 >
-                  🛍️ Co-Shop Room
+                  Co-Shop Room
                 </Link>
               </>
             )}

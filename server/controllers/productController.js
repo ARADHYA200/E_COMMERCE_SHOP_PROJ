@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 import Review from "../models/Review.js";
+import notifyProductChange from "../utils/priceAlertService.js";
 
 // GET ALL PRODUCTS
 export const getProducts = async (req, res) => {
@@ -69,19 +70,47 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// UPDATE PRODUCT
+
 export const updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(
+    const oldProduct = await Product.findById(req.params.id);
+
+    if (!oldProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const oldPrice = oldProduct.price;
+    const oldStock = oldProduct.stock;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true }
+      {
+        new: true,
+        runValidators: true,
+      }
     );
-    res.json(product);
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Trigger notifications without making the product update depend on email.
+    void notifyProductChange({
+      product: updatedProduct,
+      oldPrice,
+      newPrice: updatedProduct.price,
+      oldStock,
+      newStock: updatedProduct.stock,
+    });
+
+    return res.status(200).json(updatedProduct);
   } catch (error) {
-    res.status(500).json({ message: "Update failed" });
+    console.error("Update product error:", error);
+    return res.status(500).json({ message: "Failed to update product" });
   }
 };
+
 
 // DELETE PRODUCT
 export const deleteProduct = async (req, res) => {
@@ -119,3 +148,4 @@ export const getRecommendedProducts = async (req, res) => {
     });
   }
 };
+
