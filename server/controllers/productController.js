@@ -122,10 +122,9 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// GET RECOMMENDED PRODUCTS
 export const getRecommendedProducts = async (req, res) => {
   try {
-    const currentProduct = await Product.findById(req.params.id);
+    const currentProduct = await Product.findById(req.params.id).lean();
 
     if (!currentProduct) {
       return res.status(404).json({
@@ -133,19 +132,100 @@ export const getRecommendedProducts = async (req, res) => {
       });
     }
 
-    const recommendations = await Product.find({
+    const products = await Product.find({
       _id: { $ne: currentProduct._id },
-      category: currentProduct.category,
-    })
-      .limit(4)
-      .lean();
+      stock: { $gt: 0 },
+    }).lean();
 
-    res.json(recommendations);
+    const tokenize = (text = "") =>
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .split(/\s+/)
+        .filter((word) => word.length > 1);
+
+    const buildVector = (product) => {
+      const text = [
+        product.name,
+        product.description,
+        product.category,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const words = tokenize(text);
+      const vector = {};
+
+      for (const word of words) {
+        vector[word] = (vector[word] || 0) + 1;
+      }
+
+      return vector;
+    };
+
+    const cosineSimilarity = (a, b) => {
+      let dot = 0;
+      let normA = 0;
+      let normB = 0;
+
+      for (const [word, value] of Object.entries(a)) {
+        normA += value * value;
+
+        if (b[word] !== undefined) {
+          dot += value * b[word];
+        }
+      }
+
+      for (const value of Object.values(b)) {
+        normB += value * value;
+      }
+
+      if (!normA || !normB) return 0;
+
+      return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    };
+
+    const currentVector = buildVector(currentProduct);
+
+    const recommendations = products
+      .map((product) => {
+        const similarity = cosineSimilarity(
+          currentVector,
+          buildVector(product)
+        );
+
+        const sameCategory =
+          product.category === currentProduct.category;
+
+        const currentPrice = Number(currentProduct.price) || 0;
+        const candidatePrice = Number(product.price) || 0;
+
+        const priceSimilarity =
+          currentPrice > 0 && candidatePrice > 0
+            ? Math.min(currentPrice, candidatePrice) /
+              Math.max(currentPrice, candidatePrice)
+            : 0;
+
+        const score =
+          similarity * 0.65 +
+          (sameCategory ? 0.25 : 0) +
+          priceSimilarity * 0.1;
+
+        return {
+          product,
+          score,
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 4)
+      .map(({ product }) => product);
+
+    return res.json(recommendations);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    console.error("Recommendation error:", error);
+
+    return res.status(500).json({
       message: "Failed to fetch recommendations",
     });
   }
 };
-

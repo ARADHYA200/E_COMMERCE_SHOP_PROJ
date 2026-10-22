@@ -4,7 +4,6 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import connectDB from "./config/db.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
