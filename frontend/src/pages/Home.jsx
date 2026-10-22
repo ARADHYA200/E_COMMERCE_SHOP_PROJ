@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { WishlistContext } from "../context/WishlistContext.jsx";
+import API from "../services/api";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,6 +35,85 @@ const Home = () => {
       name: "Premium Laptop",
     },
   ];
+
+  const { wishlistItems } = useContext(WishlistContext);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadRecommendations = async () => {
+      if (!userInfo || isAdmin) {
+        setRecommendedProducts([]);
+        return;
+      }
+
+      setLoadingRecommendations(true);
+
+      try {
+        const { data } = await API.get("/products");
+        const allProducts = Array.isArray(data) ? data : [];
+
+        const wishlistCategories = wishlistItems
+          .map((item) => item.category)
+          .filter(Boolean);
+
+        const wishlistWords = wishlistItems
+          .map((item) => `${item.name || ""} ${item.description || ""}`)
+          .join(" ")
+          .toLowerCase()
+          .split(/[^a-z0-9]+/)
+          .filter((word) => word.length > 2);
+
+        const ranked = allProducts
+          .filter(
+            (product) =>
+              !wishlistItems.some((item) => item._id === product._id) &&
+              Number(product.stock) > 0
+          )
+          .map((product) => {
+            const text =
+              `${product.name || ""} ${product.description || ""} ${product.category || ""}`
+                .toLowerCase();
+
+            const wordScore = wishlistWords.reduce(
+              (score, word) => score + (text.includes(word) ? 1 : 0),
+              0
+            );
+
+            const categoryScore = wishlistCategories.includes(product.category)
+              ? 3
+              : 0;
+
+            return {
+              ...product,
+              recommendationScore: wordScore + categoryScore,
+            };
+          })
+          .sort(
+            (a, b) =>
+              b.recommendationScore - a.recommendationScore
+          )
+          .slice(0, 4);
+
+        if (!cancelled) setRecommendedProducts(ranked);
+      } catch (error) {
+        console.error("Could not load recommendations:", error);
+        if (!cancelled) setRecommendedProducts([]);
+      } finally {
+        if (!cancelled) setLoadingRecommendations(false);
+      }
+    };
+
+    loadRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [wishlistItems, isAdmin, userInfo?.token]);
+
+  
 
   return (
     <div className="overflow-hidden">
@@ -171,6 +253,59 @@ const Home = () => {
         </div>
 
       </section>
+
+      {/* ============== CUSTOMER RECOMMENDATIONS ============== */}
+      {isLoggedIn && !isAdmin && (
+        <section className="py-16 max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold mb-3 text-gray-900 dark:text-white">
+            Recommended for You ✨
+          </h2>
+
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            Products selected using your wishlist preferences.
+          </p>
+
+          {loadingRecommendations ? (
+            <p className="text-gray-500">Finding products for you...</p>
+          ) : recommendedProducts.length === 0 ? (
+            <p className="text-gray-500">
+              Add products to your wishlist to get personalized suggestions.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recommendedProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="rounded-2xl overflow-hidden bg-white dark:bg-gray-900 shadow-md"
+                >
+                  <img
+                    src={product.image || "https://via.placeholder.com/300"}
+                    alt={product.name}
+                    className="w-full h-48 object-contain bg-gray-100 dark:bg-gray-800 p-4"
+                  />
+
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {product.name}
+                    </h3>
+
+                    <p className="text-primary font-bold mt-2">
+                      ₹{product.price}
+                    </p>
+
+                    <button
+                      onClick={() => navigate(`/products/${product._id}`)}
+                      className="w-full mt-4 bg-primary text-white py-2 rounded-lg"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ================= CTA ================= */}
       {!isLoggedIn && (
